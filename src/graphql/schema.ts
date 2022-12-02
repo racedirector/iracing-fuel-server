@@ -8,9 +8,11 @@ export default buildSchema(`
   }
 
   type Query {
-    fuelUsage(input: FuelUsageInputType!): [Float!]!
-    averageFuelUsage(input: FuelUsageInputType!): Float!
+    isAverageUsageReliable(input: FuelUsageInputType!): Boolean!
     cars: [String!]!
     tracksForCar(carName: String!): [String!]!
+    fuelUsage(input: FuelUsageInputType!): [Float!]!
+    averageFuelUsage(input: FuelUsageInputType!): Float!
+    lastFuelUsage(input: FuelUsageInputType!): Float!
   }
 `);

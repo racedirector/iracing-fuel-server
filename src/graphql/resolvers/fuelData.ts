@@ -29,38 +29,49 @@ export const tracksForCarResolver = async (args): Promise<string[]> => {
 // Convert the value from the .ini file to a usable array of numbers.
 // The first value in the array represents the number of "valid" fuel
 // usage laps we have. The following 5 values represent fuel usage.
-const parseFuelDataString = (dataString: string): number[] =>
+const normalizeFuelDataString = (dataString: string): number[] =>
   dataString
     .split(',')
     .filter((entry) => entry.trim() != '')
     .map((number) => parseFloat(number));
 
-const getFuelData = (dataString: string) => {
-  const [numberOfLaps, ...fuelData] = parseFuelDataString(dataString);
-  return fuelData.slice(0, numberOfLaps);
+const normalizeFuelData = (dataString: string): [number, number[]] => {
+  const [numberOfLaps, ...fuelData] = normalizeFuelDataString(dataString);
+  return [numberOfLaps, fuelData.slice(0, numberOfLaps)];
 };
 
 const parseFuelData = (parser: ConfigIniParser) => (carName: string, track: string) => {
   if (parser.isHaveSection(carName)) {
     if (parser.isHaveOption(carName, track)) {
       const fuelDataString = parser.get(carName, track) as string;
-      return getFuelData(fuelDataString);
+      return normalizeFuelData(fuelDataString);
     }
   }
 
   return [];
 };
 
-export const fuelUsageResolver = async ({ input: { track, carName } }): Promise<number[]> => {
-  return parseFuelData(await createParser())(carName, track);
+export const isAverageUsageReliableResolver = async ({ input: { track, carName } }): Promise<boolean> => {
+  const [numberOfLaps] = parseFuelData(await createParser())(carName, track);
+  return numberOfLaps === 5;
 };
 
-export const averageFuelUsageResolver = async ({ input: { track, carName } }) => {
-  const fuelData = parseFuelData(await createParser())(carName, track);
-  if (fuelData.length > 0) {
-    const averageUsage = fuelData.reduce((averageUsage, usage) => averageUsage + usage, 0) / fuelData.length;
-    return averageUsage.toFixed(2);
+export const fuelUsageResolver = async ({ input: { track, carName } }): Promise<number[]> => {
+  const [, usage] = parseFuelData(await createParser())(carName, track);
+  return usage;
+};
+
+export const averageFuelUsageResolver = async ({ input: { track, carName } }): Promise<number | undefined> => {
+  const [, usage] = parseFuelData(await createParser())(carName, track);
+  if (usage.length > 0) {
+    const averageUsage = usage.reduce((averageUsage, usage) => averageUsage + usage, 0) / usage.length;
+    return parseFloat(averageUsage.toFixed(2));
   }
 
   return undefined;
+};
+
+export const lastFuelUsageResolver = async ({ input: { track, carName } }): Promise<number | undefined> => {
+  const [, usage] = parseFuelData(await createParser())(carName, track);
+  return usage.pop();
 };
