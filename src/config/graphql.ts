@@ -1,11 +1,11 @@
-import { RequestHandler } from 'express';
-import { graphqlHTTP } from 'express-graphql';
+import { createYoga, createSchema } from 'graphql-yoga';
 import schema from '../graphql/schema';
 import resolvers from '../graphql/resolvers';
 
-export const createGraphQLSchema = (): RequestHandler =>
-  graphqlHTTP({
-    schema: schema,
-    rootValue: resolvers,
-    graphiql: true,
-  });
+export default createYoga({
+  schema: createSchema({
+    typeDefs: schema,
+    resolvers,
+  }),
+  graphiql: true,
+});

@@ -10,9 +10,7 @@ import { createServer } from '@config/express';
 import { AddressInfo } from 'net';
 import http from 'http';
 import { logger } from '@config/logger';
-
-const host = process.env.HOST || '0.0.0.0';
-const port = process.env.PORT || '5000';
+import { host, port } from '@server/constants';
 
 async function startServer() {
   const app = createServer();

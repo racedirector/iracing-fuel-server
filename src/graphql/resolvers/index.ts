@@ -1,19 +1,21 @@
 import {
   averageFuelUsageResolver,
-  fuelUsageResolver,
   carsResolver,
-  tracksForCarResolver,
+  fuelUsageResolver,
   isAverageUsageReliableResolver,
   lastFuelUsageResolver,
+  tracksForCarResolver,
 } from './fuelData';
 
 const root = {
-  fuelUsage: fuelUsageResolver,
-  averageFuelUsage: averageFuelUsageResolver,
-  lastFuelUsage: lastFuelUsageResolver,
-  cars: carsResolver,
-  tracksForCar: tracksForCarResolver,
-  isAverageUsageReliable: isAverageUsageReliableResolver,
+  Query: {
+    averageFuelUsage: averageFuelUsageResolver,
+    cars: carsResolver,
+    fuelUsage: fuelUsageResolver,
+    isAverageUsageReliable: isAverageUsageReliableResolver,
+    lastFuelUsage: lastFuelUsageResolver,
+    tracksForCar: tracksForCarResolver,
+  },
 };
 
 export default root;
